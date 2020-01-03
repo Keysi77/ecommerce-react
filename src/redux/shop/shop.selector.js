@@ -12,12 +12,12 @@ export const selectCollections = collectionUrlParam =>
     createSelector(
         [selectShopCollections],
         // najde kolekciu podla ID a tu pomocou routra vyrenderuje
-        collections => collections[collectionUrlParam]
+        collections => collections ? collections[collectionUrlParam] : null
     )
 
 // selector konvert objektu do pola
 export const selectCollectionsForPreview = createSelector(
     [selectShopCollections],
     // zoberie svetky keys z objektu a transformuje ich na array
-    collections => Object.keys(collections).map(key => collections[key])
+    collections => collections ? Object.keys(collections).map(key => collections[key]) : []
 )

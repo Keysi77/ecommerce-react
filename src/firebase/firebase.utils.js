@@ -49,6 +49,37 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
 
+// formater pre GETnutie tabulky collections aby sme mali len title a items
+export const convertCollectionsSnapshotToMap = (collection) => {
+	const transformedCollection = collection.docs.map(doc => {
+		const { title, items } = doc.data();
+
+		return {
+			routeName: encodeURI(title.toLowerCase()),
+			id: doc.id,
+			title,
+			items
+		}
+	})
+	return transformedCollection.reduce((accumulator, collection) => {
+		accumulator[collection.title.toLowerCase()] = collection
+		return accumulator;
+	}, {} )
+}
+
+// hromadne pridanie kolekcie
+export const addCollectionAndDocuments = async (collectionKey, objectsToAdd) => {
+	const collectionRef = firestore.collection(collectionKey)
+	const batch = firestore.batch();
+	objectsToAdd.forEach(obj => {
+		const newDocRef = collectionRef.doc();
+		batch.set(newDocRef, obj)
+	})
+	// commitne nas batch request
+	return await batch.commit()
+
+}
+
 const provider = new firebase.auth.GoogleAuthProvider();
 provider.setCustomParameters({ promt: 'select_account' });
 

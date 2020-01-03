@@ -24,7 +24,9 @@ class App extends Component {
 
 	componentDidMount() {
 		// autentifikacia pouzivatela pomocou firebase auth
+		// ! Observer Pattern - next(), error(), complete() v onAuthStateChanged(...)
 		this.unsubsribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+			// ? next() funkcia v observables
 			if (userAuth) {
 				const userRef = await createUserProfileDocument(userAuth);
 				// * onSnapshot nieco podobne ako subscribe v angulari
@@ -50,8 +52,19 @@ class App extends Component {
 			} else {
 				// this.setState({ currentUser: userAuth });
 				this.props.setCurrentUser(userAuth);
+				// * programaticky prida data zo suboru do databazy firestore - STACI LEN RAZ ZAVOLAT
+				// addCollectionAndDocuments(
+				// 	'collections',
+				// 	// aby pridalo do firestoru len title a items - ostatne vygeneruje samo
+				// 	this.props.collectionsArray.map(({ title, items }) => ({ title, items }))
+				// );
 			}
-		});
+		},
+		// ? error() - neni povinne
+		error => console.log(error),
+		// ? complete() neni povinna lebo mame unsubscrible v componentWillUnmount() - cize nikdy neskonci tento stream
+		console.log('COMPLETED')
+		);
 	}
 
 	componentWillUnmount() {
@@ -87,6 +100,7 @@ class App extends Component {
 // spristupni sa -> this.props.currentUser
 const mapStateToProps = (state) => ({
 	currentUser: selectCurrentUser(state)
+	// collectionsArray: selectCollectionsForPreview(state)
 });
 
 // Nastavi current Usera ktory sa prihlasi

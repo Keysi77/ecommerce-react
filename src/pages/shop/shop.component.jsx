@@ -27,6 +27,7 @@ class Shop extends React.Component {
 			this.setState({ loading: false })
 		})
 	}
+	
 
 	render() {
 		const { loading } = this.state
